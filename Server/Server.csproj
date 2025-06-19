@@ -9,10 +9,11 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<PackageReference Include="Blazor.ECharts" Version="1.0.3" />
-		<PackageReference Include="Radzen.Blazor" Version="4.34.3" />
-		<PackageReference Include="Serilog" Version="4.0.0" />
-		<PackageReference Include="Serilog.Extensions.Logging" Version="8.0.0" />
+		<PackageReference Include="Blazor.ECharts" Version="1.0.4" />
+		<PackageReference Include="Microsoft.JSInterop" Version="8.0.12" />
+		<PackageReference Include="Radzen.Blazor" Version="5.9.8" />
+		<PackageReference Include="Serilog" Version="4.2.0" />
+		<PackageReference Include="Serilog.Extensions.Logging" Version="9.0.0" />
 		<PackageReference Include="Serilog.Sinks.File" Version="6.0.0" />
 	</ItemGroup>
 
@@ -44,19 +45,12 @@
 		<Error Condition="'$(NpmCheckExitCode)' != '0'" Text="You must install NPM to build this project" />
 	</Target>
 
-	<Target Name="NpmInstall" BeforeTargets="CheckForTypeScript" Inputs="package.json" Outputs="$(NpmLastInstall)">
+	<Target Name="NpmInstall" BeforeTargets="CompileTypeScript" Inputs="package.json" Outputs="$(NpmLastInstall)">
 		<Exec Command="npm install" />
 		<Touch Files="$(NpmLastInstall)" AlwaysCreate="true" />
 	</Target>
 
-	<Target Name="CheckForTypeScript" BeforeTargets="CompileTypeScript" DependsOnTargets="NpmInstall">
-		<Exec Command="tsc -v" ContinueOnError="true">
-			<Output TaskParameter="ExitCode" PropertyName="TypeScriptCheckExitCode" />
-		</Exec>
-		<Error Condition="'$(TypeScriptCheckExitCode)' != '0'" Text="You must install TypeScript to build this project" />
-	</Target>
-
-	<Target Name="CompileTypeScript" BeforeTargets="CompileTailwindCSS" Condition="Exists('tsconfig.json')">
+	<Target Name="CompileTypeScript" BeforeTargets="CompileTailwindCSS" Condition="Exists('tsconfig.json')" DependsOnTargets="NpmInstall">
 		<Exec Command="npm run typescript-build" Condition="'$(Configuration)' == 'Debug'" />
 		<Exec Command="npm run typescript-release" Condition="'$(Configuration)' == 'Release'" />
 	</Target>

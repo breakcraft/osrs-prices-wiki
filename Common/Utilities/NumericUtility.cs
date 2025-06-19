@@ -19,18 +19,21 @@ namespace Common.Utilities
                 _ when seconds >= (int)TimeUnit.Minutes => (seconds / (int)TimeUnit.Minutes, TimeUnit.Minutes),
                 _ => (seconds, TimeUnit.Seconds)
             };
+
             return $"{formattedValue} {suffix.ToString()[..^1].ToLower()}{(formattedValue == 1 ? "" : "s")}";
         }
 
         /// <summary>
         /// Formats seconds to relative datetime based on client datetime and interval (Today time, Yesterday time, Last Date time, Date time)
         /// </summary>
-        public static string FormatSecondsToRelativeDateTime(long seconds, DateTime clientDateTime, TimeZoneInfo clientTimeZone, string? interval = null)
+        public static string FormatSecondsToRelativeDateTime(long seconds, (DateTime? DateTime, TimeZoneInfo? TimeZone) client, string? interval = null)
         {
-            DateTime targetDateTime = TimeZoneInfo.ConvertTimeFromUtc(
-                DateTime.UnixEpoch.AddSeconds(seconds).ToUniversalTime(), clientTimeZone);
+            TimeZoneInfo targetTimeZone = client.TimeZone ?? TimeZoneInfo.Local;
 
-            int daysDifference = (int)(TimeZoneInfo.ConvertTime(clientDateTime, clientTimeZone).Date - targetDateTime.Date).TotalDays;
+            DateTime targetDateTime = TimeZoneInfo.ConvertTimeFromUtc(
+                DateTime.UnixEpoch.AddSeconds(seconds).ToUniversalTime(), targetTimeZone);
+
+            int daysDifference = (int)(TimeZoneInfo.ConvertTime(client.DateTime ?? DateTime.UtcNow, targetTimeZone).Date - targetDateTime.Date).TotalDays;
 
             string date = daysDifference switch
             {
