@@ -20,3 +20,16 @@
    ```sh
    npm run dev-watch
    ```
+
+## UWM Price Forecast Script
+
+A simple forecasting script is available under `scripts/uwm_price_forecast.py`.
+It downloads historical prices using `yfinance`, fits an ARIMA model, and
+predicts when UWM Holdings Corp (ticker `UWMC`) might exceed $6 per share.
+
+The script is intended for educational purposes only and should not be
+considered financial advice. Run it with:
+
+```bash
+python3 scripts/uwm_price_forecast.py
+```
